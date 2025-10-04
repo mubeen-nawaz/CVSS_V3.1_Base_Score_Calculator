@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVSS v3.1 Base Score Calculator</title>
+    <style>
+        /* Reset and Body Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1e293b; /* dark slate background */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Main Card Container */
+        .card {
+            background: #0f172a; /* deep dark card background */
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 35rem;
+            width: 100%;
+            border: 1px solid #374151; /* subtle border for depth */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #f9fafb; /* light text */
+            letter-spacing: 1px;
+        }
+
+        /* Form spacing */
+        #cvss-form > div + div {
+            margin-top: 1.5rem;
+        }
+
+        /* Labels */
+        label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #d1d5db; /* light gray */
+            margin-bottom: 0.3rem;
+        }
+
+        /* Select Dropdowns */
+        select {
+            margin-top: 0.3rem;
+            display: block;
+            width: 100%;
+            border: 1px solid #4b5563; /* muted border */
+            border-radius: 0.75rem;
+            padding: 0.55rem 1rem;
+            font-size: 1rem;
+            background: #1f2937; /* dark background */
+            color: #f9fafb; /* text color */
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%f9fafb' viewBox='0 0 20 20'%3e%3cpath stroke='%f9fafb' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em 1.2em;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue highlight */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Button */
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #6366f1); /* blue-purple gradient */
+            color: #f9fafb;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            transform: translateY(-2px);
+        }
+
+        /* Result Display Area */
+        #result {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f9fafb; /* light text */
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+    </style>
+    <script src="/static/js/main.js" defer></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+        <h1 class="text-2xl font-bold text-center mb-6">CVSS v3.1 Base Score Calculator</h1>
+        <form id="cvss-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Attack Vector (AV)</label>
+                <select name="av" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="network">Network</option>
+                    <option value="adjacent">Adjacent</option>
+                    <option value="local">Local</option>
+                    <option value="physical">Physical</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Attack Complexity (AC)</label>
+                <select name="ac" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Privileges Required (PR)</label>
+                <select name="pr" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">User Interaction (UI)</label>
+                <select name="ui" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="none">None</option>
+                    <option value="required">Required</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Scope (S)</label>
+                <select name="s" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="unchanged">Unchanged</option>
+                    <option value="changed">Changed</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Confidentiality Impact (C)</label>
+                <select name="c" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Integrity Impact (I)</label>
+                <select name="i" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Availability Impact (A)</label>
+                <select name="a" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="none">None</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Calculate Score</button>
+        </form>
+        <div id="result" class="mt-4 text-center"></div>
+    </div>
+</body>
+</html>
